@@ -1,6 +1,8 @@
 import React,{Component} from "react";
 import {BrowserRouter as Router,Route,Switch} from 'react-router-dom';
 import "./App.css";
+import AddCandidate from "./AddCandidate";
+import ipfs from "./ipfs";
 import VoteHome from "./voting";
 import Candidates from './candidates';
 import Navbar from './Navbar';
@@ -18,11 +20,13 @@ class App extends Component{
 			contract:null,
 			Loading:true,
 			access:null,
+			buffer:null,
 			count:0,
 			candidates:[],
 			total:0,
 			history:[],
-			percentage:[]
+			percentage:[],
+			ipfsHash:null
 		}
 	}
 	async componentWillMount(){
@@ -84,21 +88,41 @@ class App extends Component{
       	alert("Connect it to your localhost (Ganache) !!")
       }
     }
+	captureFile = (event) =>{
+		event.preventDefault();
+		const file = event.target.files[0]
+		const reader = new window.FileReader()
+		reader.readAsArrayBuffer(file)
+		reader.onloadend = () =>{
+		  this.setState({buffer : Buffer(reader.result)})
+		}
+	}
+	Collect = (name) =>{
+      	ipfs.files.add(this.state.buffer , (error , result) =>{
+        	if(error || this.state.buffer === null){
+            	window.alert("Insufficient Data !!")
+            	return;
+			}
+			this.setState({ipfsHash : result[0].hash})
+        	this.state.access.methods.add(name,this.state.ipfsHash).send({from : this.state.account,gas: 1500000,gasPrice: 100}).on('confirmation',(reciept) =>{
+            	window.location.reload()
+	    	})
+        })
+    }
 	render(){
 		return (
 			this.state.Loading ? <div id="spinner">
 									<div className="spinner-border"></div>
 		  						 </div>:<div>
         									<Router>
-            									<Navbar
-												access={this.state.access}
-												Loading={this.state.Loading}
-												account={this.state.account}/>
+            									<Navbar/>
 												<Switch>
 													<Route exact path="/Home" render={props => 
   													(<VoteHome {...props} account={this.state.account} access={this.state.access} candidates={this.state.candidates} Loading={this.state.Loading}/>)}/>
 													<Route exact path="/History" render={props => 
   													(<History {...props} history={this.state.history}/>)}/>
+													<Route exact path="/addCandidate" render={props => 
+  													(<AddCandidate {...props} Collect={this.Collect} captureFile={this.captureFile}/>)}/>
 													<Route exact path="/Candidates" render={props => 
   													(<Candidates {...props} candidates={this.state.candidates} total={this.state.total} percentage={this.state.percentage}/>)}/>
 													<Route exact path="/" render={props => 

@@ -8,7 +8,7 @@ contract Voting{
     }
     struct prop{
         string name;
-        uint256 votes;
+        uint votes;
         string profile;
     }
     struct His{
@@ -17,7 +17,7 @@ contract Voting{
     }
     event Eprop(
         string name,
-        uint256 votes,
+        uint votes,
         string profile
     );
     event EHis(
@@ -28,10 +28,10 @@ contract Voting{
     His[] public History;
     uint256 public total=0;
     uint256 public till = 0;
-    mapping(string => uint256) index;
+    mapping(string => uint) index;
     mapping(string => bool) present;
     mapping(address => bool) voted;
-    mapping(string => uint256) count;
+    mapping(string => uint) count;
     modifier OnlyOwner{
         require(Owner == msg.sender,"You are not authorised to add candidates");
         _;

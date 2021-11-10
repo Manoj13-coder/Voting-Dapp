@@ -12,7 +12,7 @@ class candidates extends Component{
                                         <div className="col-lg-3 col-md-4 col-12" key={key}>
                                             <div className="card w-100 mx-auto mt-3 mb-3"  style={{border:"none"}}>
                                                 <div className="card-body">
-                                                    <img width="150" height="150" className="border border-secondary rounded-circle" src={man.profile}/>
+                                                    <img width="150" height="150" className="border border-secondary rounded-circle" src={`https://ipfs.io/ipfs/${man.profile}`}/>
                                                     <h4 className="card-title mt-3">{man.name}</h4>
                                                     <div className="progress w-75 mx-auto">
                                                         <div className="progress-bar bg-secondary" style={{width:`${this.props.percentage[key]}%`}}>{this.props.percentage[key]}%</div>
